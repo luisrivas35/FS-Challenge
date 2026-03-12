@@ -7,6 +7,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./codebase/rdicidr-0.1.0
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -14,11 +18,11 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'npm'
+        node-version: '15'
+        ##cache: 'npm'
 
     - name: Install Dependencies
-      run: npm install
+      run: npm install --engine-strict=false --legacy-peer-deps
    
     - name: Install Linter
       run: npm run lint
