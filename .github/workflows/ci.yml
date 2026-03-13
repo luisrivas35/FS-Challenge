@@ -48,19 +48,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Login to Amazon ECR
+    - name: Login to ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build, tag, and push image to ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: fsl-challenge
-        IMAGE_TAG: v${{ github.run_number }}
-      run: |
-        # Build from the specific subdirectory
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest ./codebase/rdicidr-0.1.0
+        ECR_REPOSITORY: fsl-challenge        
+        VERSION_TAG: v${{ github.run_number }}
+        LATEST_TAG: latest
+      run: |        
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$VERSION_TAG \
+                     -t $ECR_REGISTRY/$ECR_REPOSITORY:$LATEST_TAG \
+                     ./codebase/rdicidr-0.1.0
+                
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$VERSION_TAG
         
-        # Push both unique version and latest tag
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$LATEST_TAG
